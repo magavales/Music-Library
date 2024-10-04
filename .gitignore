@@ -17,6 +17,15 @@
 # Dependency directories (remove the comment below to include it)
 # vendor/
 
+# IDEA files
+*.idea
+.idea/
+
+# OS files
+.DS_Store
+.DS_Store?
+.DS_Store/
+
 # Go workspace file
 go.work
 go.work.sum
