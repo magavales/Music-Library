@@ -84,10 +84,10 @@ func (ml *MusicLibrary) Get(context *gin.Context) {
 
 func (ml *MusicLibrary) GetByID(context *gin.Context) {
 	var (
-		err  error
-		song models.Song
-		id   int
+		err error
+		id  int
 	)
+	song := models.NewSong()
 	id, _ = strconv.Atoi(context.Param("id"))
 	song, err = ml.db.GetByID(context, id)
 	if err != nil {
@@ -107,10 +107,10 @@ func (ml *MusicLibrary) GetByID(context *gin.Context) {
 
 func (ml *MusicLibrary) GetText(context *gin.Context) {
 	var (
-		err  error
-		id   int
-		song models.Song
+		err error
+		id  int
 	)
+	song := models.NewSong()
 	id, _ = strconv.Atoi(context.Param("id"))
 	params := models.NewParameter()
 	params.Parse(context.Request.URL)
@@ -154,11 +154,11 @@ func (ml *MusicLibrary) Delete(context *gin.Context) {
 
 func (ml *MusicLibrary) Update(context *gin.Context) {
 	var (
-		err     error
-		id      int
-		songNew models.Song
-		songOld models.Song
+		err error
+		id  int
 	)
+	songNew := models.NewSong()
+	songOld := models.NewSong()
 	id, _ = strconv.Atoi(context.Param("id"))
 	err = songNew.DecodeJSON(context.Request.Body)
 	if err != nil {

@@ -97,24 +97,24 @@ func (pdb *PostgresDB) Get(context *gin.Context, sql string) ([]models.Song, err
 	return songs, err
 }
 
-func (pdb *PostgresDB) GetByID(context *gin.Context, id int) (models.Song, error) {
-	var song models.Song
+func (pdb *PostgresDB) GetByID(context *gin.Context, id int) (*models.Song, error) {
+	song := models.NewSong()
 
 	rows, err := pdb.pool.Query(context, "SELECT * FROM music_library WHERE id=$1", id)
 	if err != nil {
 		logrus.Infof("Error selecting row: %v", err)
-		return models.Song{}, err
+		return nil, err
 	}
 	if rows.Next() {
 		values, err := rows.Values()
 		if err != nil {
 			logrus.Infof("Error iterating rows: %v", err)
-			return models.Song{}, err
+			return nil, err
 		}
 		song.ParseRows(values)
 	} else {
 		logrus.Infof("Error iterating rows: %v", err)
-		return models.Song{}, pgx.ErrNoRows
+		return nil, pgx.ErrNoRows
 	}
 
 	return song, err
@@ -135,7 +135,7 @@ func (pdb *PostgresDB) Delete(context *gin.Context, id int) error {
 	return err
 }
 
-func (pdb *PostgresDB) Update(context *gin.Context, songNew models.Song, id int) error {
+func (pdb *PostgresDB) Update(context *gin.Context, songNew *models.Song, id int) error {
 	ans, err := pdb.pool.Exec(context, "UPDATE music_library SET group_name=$2, song_name=$3, release_date=$4, text=$5, link=$6 WHERE id=$1", id, songNew.GroupName, songNew.SongName, songNew.ReleaseDate, songNew.Text, songNew.Link)
 	if err != nil {
 		logrus.Infof("Error updating row: %v", err)
