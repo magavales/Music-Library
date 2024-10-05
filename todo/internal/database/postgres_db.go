@@ -51,18 +51,18 @@ func (pdb *PostgresDB) Create(context *gin.Context, song models.Song) (int64, er
 
 	rows, err := pdb.pool.Query(context, "INSERT INTO music_library (group_name, song_name, release_date, text, link) VALUES ($1, $2, $3, $4, $5) RETURNING id", song.GroupName, song.SongName, song.ReleaseDate, song.Text, song.Link)
 	if err != nil {
-		logrus.Infof("Error inserting row: %v", err)
+		logrus.Debugf("Error inserting row: %v", err)
 		return 0, err
 	}
 	if rows.Next() {
 		values, err := rows.Values()
 		if err != nil {
-			logrus.Infof("Error iterating rows: %v", err)
+			logrus.Debugf("Error iterating rows: %v", err)
 			return 0, err
 		}
 		id = values[0].(int64)
 	} else {
-		logrus.Infof("Error iterating rows: %v", err)
+		logrus.Debugf("Error iterating rows: %v", err)
 		return 0, pgx.ErrNoRows
 	}
 
@@ -77,20 +77,20 @@ func (pdb *PostgresDB) Get(context *gin.Context, sql string) ([]models.Song, err
 
 	rows, err := pdb.pool.Query(context, sql)
 	if err != nil {
-		logrus.Infof("Error selecting row: %v", err)
+		logrus.Debugf("Error selecting row: %v", err)
 		return []models.Song{}, err
 	}
 	for rows.Next() {
 		values, err := rows.Values()
 		if err != nil {
-			logrus.Infof("Error iterating rows: %v", err)
+			logrus.Debugf("Error iterating rows: %v", err)
 			return []models.Song{}, err
 		}
 		song.ParseRows(values)
 		songs = append(songs, song)
 	}
 	if err = rows.Err(); err != nil {
-		logrus.Infof("Error iterating rows: %v", err)
+		logrus.Debugf("Error iterating rows: %v", err)
 		return songs, pgx.ErrNoRows
 	}
 
@@ -102,18 +102,18 @@ func (pdb *PostgresDB) GetByID(context *gin.Context, id int) (*models.Song, erro
 
 	rows, err := pdb.pool.Query(context, "SELECT * FROM music_library WHERE id=$1", id)
 	if err != nil {
-		logrus.Infof("Error selecting row: %v", err)
+		logrus.Debugf("Error selecting row: %v", err)
 		return nil, err
 	}
 	if rows.Next() {
 		values, err := rows.Values()
 		if err != nil {
-			logrus.Infof("Error iterating rows: %v", err)
+			logrus.Debugf("Error iterating rows: %v", err)
 			return nil, err
 		}
 		song.ParseRows(values)
 	} else {
-		logrus.Infof("Error iterating rows: %v", err)
+		logrus.Debugf("Error iterating rows: %v", err)
 		return nil, pgx.ErrNoRows
 	}
 
@@ -123,12 +123,12 @@ func (pdb *PostgresDB) GetByID(context *gin.Context, id int) (*models.Song, erro
 func (pdb *PostgresDB) Delete(context *gin.Context, id int) error {
 	ans, err := pdb.pool.Exec(context, "DELETE FROM music_library WHERE id=$1", id)
 	if err != nil {
-		logrus.Infof("Error deleting row: %v", err)
+		logrus.Debugf("Error deleting row: %v", err)
 		return err
 	}
 
 	if ans.String() == "DELETE 0" {
-		logrus.Infof("Error deleting row: no rows were deleted")
+		logrus.Debugf("Error deleting row: no rows were deleted")
 		return pgx.ErrNoRows
 	}
 
@@ -138,12 +138,12 @@ func (pdb *PostgresDB) Delete(context *gin.Context, id int) error {
 func (pdb *PostgresDB) Update(context *gin.Context, songNew *models.Song, id int) error {
 	ans, err := pdb.pool.Exec(context, "UPDATE music_library SET group_name=$2, song_name=$3, release_date=$4, text=$5, link=$6 WHERE id=$1", id, songNew.GroupName, songNew.SongName, songNew.ReleaseDate, songNew.Text, songNew.Link)
 	if err != nil {
-		logrus.Infof("Error updating row: %v", err)
+		logrus.Debugf("Error updating row: %v", err)
 		return err
 	}
 
 	if ans.String() == "UPDATE 0" {
-		logrus.Infof("Error updating row: no rows were updated")
+		logrus.Debugf("Error updating row: no rows were updated")
 		return pgx.ErrNoRows
 	}
 
