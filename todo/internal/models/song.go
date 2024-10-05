@@ -2,7 +2,6 @@ package models
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 	"strings"
 )
@@ -62,24 +61,18 @@ func (s *Song) PaginationForText(page map[string]int) []string {
 		indexEnd   int
 		arrayText  []string
 	)
-	verse := "[Куплет]"
-	indexBegin = strings.Index(s.Text, verse)
-	if indexBegin != -1 {
-		indexEnd = strings.Index(s.Text[indexBegin:], "\n\n")
-		tempText := s.Text[indexBegin:]
-		arrayText = append(arrayText, strings.TrimSpace(tempText[:indexEnd]))
-		return arrayText
-	} else {
-		for i := page["offset"] + 1; i <= page["limit"]; i++ {
-			verse = fmt.Sprintf("[Куплет %d", i)
-			indexBegin = strings.Index(s.Text, verse)
-			if indexBegin == -1 {
-				break
-			}
-			indexEnd = strings.Index(s.Text[indexBegin:], "\n\n")
-			tempText := s.Text[indexBegin:]
-			arrayText = append(arrayText, strings.TrimSpace(tempText[:indexEnd]))
+	verse := "["
+	text := s.Text
+	indexBegin = strings.Index(text, verse)
+	for i := page["offset"] + 1; i <= page["limit"]; i++ {
+		indexBegin = strings.Index(text, verse)
+		if indexBegin == -1 {
+			break
 		}
+		indexEnd = strings.Index(text[indexBegin:], "\n\n")
+		text = text[indexBegin:]
+		arrayText = append(arrayText, strings.TrimSpace(text[:indexEnd]))
+		text = text[indexEnd+2:]
 	}
 
 	return arrayText
