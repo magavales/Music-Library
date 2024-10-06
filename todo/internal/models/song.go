@@ -15,6 +15,17 @@ type Song struct {
 	Link        string `json:"link"`
 }
 
+func NewSong() *Song {
+	return &Song{
+		ID:          -1,
+		GroupName:   "-1",
+		SongName:    "-1",
+		ReleaseDate: "-1",
+		Text:        "-1",
+		Link:        "-1",
+	}
+}
+
 func (s *Song) ParseRows(values []interface{}) {
 	s.ID = values[0].(int64)
 	s.GroupName = values[1].(string)
@@ -37,20 +48,20 @@ func (s *Song) EncodeJSON() ([]byte, error) {
 	return body, err
 }
 
-func (s *Song) Merge(songOld Song) {
-	if s.GroupName == "" {
+func (s *Song) Merge(songOld *Song) {
+	if s.GroupName == "-1" {
 		s.GroupName = songOld.GroupName
 	}
-	if s.SongName == "" {
+	if s.SongName == "-1" {
 		s.SongName = songOld.SongName
 	}
-	if s.ReleaseDate == "" {
+	if s.ReleaseDate == "-1" {
 		s.ReleaseDate = songOld.ReleaseDate
 	}
-	if s.Text == "" {
+	if s.Text == "-1" {
 		s.Text = songOld.Text
 	}
-	if s.Link == "" {
+	if s.Link == "-1" {
 		s.Link = songOld.Link
 	}
 }
