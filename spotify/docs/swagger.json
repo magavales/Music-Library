@@ -2,7 +2,7 @@
     "swagger": "2.0",
     "info": {
         "description": "API Server for Music-Library Application",
-        "title": "todo API",
+        "title": "spotify API",
         "contact": {},
         "version": "1.0.0"
     },
