@@ -6,20 +6,20 @@ import (
 )
 
 type Parameter struct {
-	page   *Pagination
-	filter *Filtration
+	Page   *Pagination
+	Filter *Filtration
 }
 
 func NewParameter() *Parameter {
 	return &Parameter{
-		page:   newPagination(),
-		filter: newFiltration(),
+		Page:   newPagination(),
+		Filter: newFiltration(),
 	}
 }
 
 func (p *Parameter) Parse(url *url.URL) {
-	p.page.parse(url)
-	p.filter.parse(url)
+	p.Page.parse(url)
+	p.Filter.parse(url)
 }
 
 func (p *Parameter) GetSQL() (string, error) {
@@ -29,9 +29,9 @@ func (p *Parameter) GetSQL() (string, error) {
 		sql    string
 		err    error
 	)
-	filter, err = p.filter.get()
+	filter, err = p.Filter.get()
 	if err != nil {
-		page, err = p.page.get()
+		page, err = p.Page.get()
 		if err != nil {
 			return "", err
 		} else {
@@ -39,7 +39,7 @@ func (p *Parameter) GetSQL() (string, error) {
 			return sql, nil
 		}
 	} else {
-		page, err = p.page.get()
+		page, err = p.Page.get()
 		if err != nil {
 			sql, _, err = goqu.From("music_library").Where(filter).ToSQL()
 			return sql, nil
@@ -51,5 +51,5 @@ func (p *Parameter) GetSQL() (string, error) {
 }
 
 func (p *Parameter) GetPage() (map[string]int, error) {
-	return p.page.get()
+	return p.Page.get()
 }
